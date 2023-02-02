@@ -15,5 +15,8 @@ class Product(models.Model):
     def sale_price(self):
         return "%.3f" %(float(self.price) * 0.7)
     
-    def discount(self):
+    def get_discount(self):
         return 1223
+    
+    def get_annual_price(self):
+        return self.price * 12
