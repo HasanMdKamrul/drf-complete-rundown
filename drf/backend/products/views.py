@@ -4,7 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      GenericAPIView, ListCreateAPIView,
                                      RetrieveAPIView, RetrieveDestroyAPIView,
-                                     RetrieveUpdateAPIView)
+                                     RetrieveUpdateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -33,6 +34,20 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
 
 product_update_api_view = ProductUpdateApiView.as_view()
 
+class ProductUltimate(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"
+    
+    def get(self,request,*args,**kwargs):
+        if kwargs.get("pk"):
+            return self.retrieve(request,*args,**kwargs)
+        queryset = Product.objects.all()
+        serialisers = ProductSerializer(queryset,many=True)
+        return Response(serialisers.data)
+       
+    
+productUltimate = ProductUltimate.as_view()
 class ProductRetriveDestroyView(RetrieveDestroyAPIView):
     queryset = Product.objects.all();
     serializer_class = ProductSerializer
