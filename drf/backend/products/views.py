@@ -1,4 +1,4 @@
-from rest_framework.generics import  RetrieveAPIView, CreateAPIView,ListCreateAPIView,RetrieveUpdateAPIView
+from rest_framework.generics import  RetrieveAPIView, CreateAPIView,ListCreateAPIView,RetrieveUpdateAPIView,DestroyAPIView
 
 from django.http import JsonResponse
 from .models import Product
@@ -19,8 +19,32 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
     permission_classes = [AllowAny]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    
+    def perform_update(self, serializer):
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
+        if content is None:
+            content = title
+        serializer.save(content=content)
 
 product_update_api_view = ProductUpdateApiView.as_view()
+
+class ProductDeleteApiView(DestroyAPIView):
+    permission_classes = [AllowAny]
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    
+    def perform_destroy(self, instance):
+        print("Deleting")
+        print(instance)
+        if instance:
+            instance.delete()
+        else:
+            return Response({"message":"Product not found"},status=404)
+          
+        
+        
+product_delete_api_view = ProductDeleteApiView.as_view()
 
 class ProductCreateApiView(CreateAPIView):
     permission_classes = [AllowAny]
