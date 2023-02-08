@@ -1,13 +1,15 @@
-from rest_framework.generics import  RetrieveAPIView, CreateAPIView,ListCreateAPIView,RetrieveUpdateAPIView,DestroyAPIView, GenericAPIView
-
-from rest_framework import mixins
-
 from django.http import JsonResponse
-from .models import Product
-from .serializers import ProductSerializer,NewProductSerializer
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework import mixins
 from rest_framework.decorators import api_view
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     GenericAPIView, ListCreateAPIView,
+                                     RetrieveAPIView, RetrieveDestroyAPIView,
+                                     RetrieveUpdateAPIView)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+from .models import Product
+from .serializers import NewProductSerializer, ProductSerializer
 
 
 class ProductDetailApiView(RetrieveAPIView):
@@ -30,6 +32,22 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
         serializer.save(content=content)
 
 product_update_api_view = ProductUpdateApiView.as_view()
+
+class ProductRetriveDestroyView(RetrieveDestroyAPIView):
+    queryset = Product.objects.all();
+    serializer_class = ProductSerializer
+    
+    def delete(self,request,*args,**kwargs):
+        self.perform_destroy(self.get_object())
+        return JsonResponse({"message":"Product deleted"},status=200)
+    
+    def perform_destroy(self, instance):
+        if instance:
+            instance.delete()
+        else:
+            return Response({"message":"Product not found"},status=404)
+
+productDeleteAndRetrive = ProductRetriveDestroyView.as_view()
 
 class ProductDeleteApiView(DestroyAPIView):
     permission_classes = [AllowAny]
