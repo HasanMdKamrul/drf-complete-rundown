@@ -6,7 +6,8 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      RetrieveAPIView, RetrieveDestroyAPIView,
                                      RetrieveUpdateAPIView,
                                      RetrieveUpdateDestroyAPIView)
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from .models import Product
@@ -35,6 +36,7 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
 product_update_api_view = ProductUpdateApiView.as_view()
 
 class ProductUltimate(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
