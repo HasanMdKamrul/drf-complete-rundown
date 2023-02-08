@@ -121,7 +121,14 @@ def get_all_operations(request,*args,**kwargs):
         
         
                 
-            
+    # # ** delete product
+    
+    if request.method == 'DELETE':
+        pk = kwargs.get('pk')
+        object_to_delete = Product.objects.filter(pk=pk).first()
+        if object_to_delete is not None:
+            object_to_delete.delete()
+            return Response({"message":"Product deleted successfully", "success" : True},status=200)
        
         
        
