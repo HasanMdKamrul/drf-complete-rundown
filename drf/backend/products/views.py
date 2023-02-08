@@ -1,8 +1,10 @@
-from rest_framework.generics import  RetrieveAPIView, CreateAPIView,ListCreateAPIView,RetrieveUpdateAPIView,DestroyAPIView
+from rest_framework.generics import  RetrieveAPIView, CreateAPIView,ListCreateAPIView,RetrieveUpdateAPIView,DestroyAPIView, GenericAPIView
+
+from rest_framework import mixins
 
 from django.http import JsonResponse
 from .models import Product
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer,NewProductSerializer
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -74,6 +76,72 @@ class ProductListCreateApiView(ListCreateAPIView):
         serializer.save(content=content)
         
 product_list_create_api_view = ProductListCreateApiView.as_view()
+
+# ** Exploring Mixins   
+
+class productMixinOperations(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin , mixins.UpdateModelMixin,mixins.DestroyModelMixin,GenericAPIView):
+
+    lookup_field = "pk"
+    
+    def get_queryset(self):
+        queryset = Product.objects.order_by('-id')
+        return queryset
+
+    def get_serializer_class(self):
+        self.serializer_class = NewProductSerializer
+        self.serializer_class.Meta.model = Product
+        self.serializer_class.Meta.fields = ["id","title","price","get_base_price","content"]
+        
+        return self.serializer_class
+    
+    def put(self,request,*args,**kwargs):
+        return self.update(request,*args,**kwargs)
+
+    def patch(self,request,*args,**kwargs):
+        return self.partial_update(request,*args,**kwargs)
+        
+
+    def delete(self,request,*args,**kwargs):
+        self.perform_destroy(self.get_object())
+        return JsonResponse({"message":"Product deleted"},status=200)
+    
+    def perform_destroy(self, instance):
+        if instance:
+            instance.delete()
+        else:
+            return Response({"message":"Product not found"},status=404)
+        
+    def get(self,request,*args,**kwargs):
+        return self.list(request,*args,**kwargs)
+    
+    def post(self,request,*args,**kwargs):
+        return self.create(request,*args,**kwargs)
+    
+    def perform_create(self, serializer):
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
+        if content is None:
+            content = title
+        serializer.save(content=content)
+    
+   
+    
+    def perform_update(self, serializer):
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
+        if content is None:
+            content = title
+        serializer.save(content=content)
+            
+    
+    def get(self,request,*args,**kwargs):
+    
+        return self.retrieve(request,*args,**kwargs)
+    
+   
+        
+
+product_mixin_operations = productMixinOperations.as_view()
 
 @api_view(['GET','POST','PUT','DELETE'])
 def get_all_operations(request,*args,**kwargs):

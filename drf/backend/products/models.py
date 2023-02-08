@@ -16,5 +16,5 @@ class Product(models.Model):
         price = Decimal(self.price) * Decimal(0.9)
         return "{:.2f} {}".format(price , "USD")
     
-    # def get_base_price(self):
-    #     return 222.22
+    def get_base_price(self):
+        return 222.22

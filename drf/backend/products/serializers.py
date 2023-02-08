@@ -21,4 +21,8 @@ class ProductSerializer(ModelSerializer):
         # if not hasattr(obj, "base_price"):
         #     return None
         # return obj.base_price
-    
+
+class NewProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["id", "title", "content", "price","get_base_price"]
