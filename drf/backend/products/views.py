@@ -1,3 +1,4 @@
+from api.authentication import CustomTokenAuthentication
 from django.http import JsonResponse
 from rest_framework import mixins
 from rest_framework.authentication import (SessionAuthentication,
@@ -41,7 +42,7 @@ product_update_api_view = ProductUpdateApiView.as_view()
 
 class ProductUltimate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminUser,IsStaffEditorPermission]
-    authentication_classes = [SessionAuthentication,TokenAuthentication]
+    authentication_classes = [SessionAuthentication,TokenAuthentication,CustomTokenAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
