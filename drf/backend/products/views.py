@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from rest_framework import mixins
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import (SessionAuthentication,
+                                           TokenAuthentication)
 from rest_framework.decorators import api_view
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      GenericAPIView, ListCreateAPIView,
@@ -8,7 +9,7 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      RetrieveUpdateAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.permissions import (AllowAny, DjangoModelPermissions,
-                                        IsAuthenticated,
+                                        IsAdminUser, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
@@ -39,8 +40,8 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
 product_update_api_view = ProductUpdateApiView.as_view()
 
 class ProductUltimate(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsStaffEditorPermission]
-    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAdminUser,IsStaffEditorPermission]
+    authentication_classes = [SessionAuthentication,TokenAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
