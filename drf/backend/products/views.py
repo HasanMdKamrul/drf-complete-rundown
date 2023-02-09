@@ -40,12 +40,16 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
 
 product_update_api_view = ProductUpdateApiView.as_view()
 
-class ProductUltimate(RetrieveUpdateDestroyAPIView):
+class ProductUltimate(RetrieveUpdateDestroyAPIView,ListCreateAPIView):
     permission_classes = [IsAdminUser,IsStaffEditorPermission]
-    authentication_classes = [SessionAuthentication,TokenAuthentication,CustomTokenAuthentication]
+    # authentication_classes = [SessionAuthentication,CustomTokenAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
+    
+    # def post(self, request, *args, **kwargs):
+    #     if not kwargs.get("pk"):
+    #         return self.create(request,*args,**kwargs)
     
     def get(self,request,*args,**kwargs):
         if kwargs.get("pk"):
@@ -59,6 +63,7 @@ productUltimate = ProductUltimate.as_view()
 class ProductRetriveDestroyView(RetrieveDestroyAPIView):
     queryset = Product.objects.all();
     serializer_class = ProductSerializer
+    
     
     def delete(self,request,*args,**kwargs):
         self.perform_destroy(self.get_object())
@@ -105,7 +110,7 @@ product_create_api_view = ProductCreateApiView.as_view()
 
 
 class ProductListCreateApiView(ListCreateAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser,IsStaffEditorPermission]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 

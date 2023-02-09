@@ -20,5 +20,5 @@ class CustomAuthToken(ObtainAuthToken):
     
 
 class CustomTokenAuthentication(TokenAuthentication):
-    
+
     keyword = 'bearer'

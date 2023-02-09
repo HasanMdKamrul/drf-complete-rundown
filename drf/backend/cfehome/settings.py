@@ -129,10 +129,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ** Rest Framework Settings **
 
-# REST_FRAMEWORK = {
-#     # Use Django's standard `django.contrib.auth` permissions,
-#     # or allow read-only access for unauthenticated users.
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+
+# auth_classes = [
+#     "rest_framework.authentication.SessionAuthentication",
+#     "api.authentication.CustomeAuthentication",
+# ]
+
+# if DEBUG:
+#     auth_classes = [
+#        "api.authentication.CustomeAuthentication",
 #     ]
-# }
+
+
+REST_FRAMEWORK = {
+   
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+         "api.authentication.TokenAuthentication",
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+    ]
+}
