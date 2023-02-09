@@ -13,6 +13,7 @@ from rest_framework.permissions import (AllowAny, DjangoModelPermissions,
 from rest_framework.response import Response
 
 from .models import Product
+from .permissions import IsStaffEditorPermission
 from .serializers import NewProductSerializer, ProductSerializer
 
 
@@ -38,7 +39,7 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
 product_update_api_view = ProductUpdateApiView.as_view()
 
 class ProductUltimate(RetrieveUpdateDestroyAPIView):
-    permission_classes = [DjangoModelPermissions]
+    permission_classes = [IsStaffEditorPermission]
     authentication_classes = [SessionAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
