@@ -14,20 +14,21 @@ from rest_framework.permissions import (AllowAny, DjangoModelPermissions,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
+from .mixins import IsStaffEditorPermissionMixin
 from .models import Product
 from .permissions import IsStaffEditorPermission
 from .serializers import NewProductSerializer, ProductSerializer
 
 
-class ProductDetailApiView(RetrieveAPIView):
-    permission_classes = [AllowAny]
+class ProductDetailApiView(IsStaffEditorPermissionMixin,RetrieveAPIView):
+   
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 product_detail_api_view = ProductDetailApiView.as_view()
 
-class ProductUpdateApiView(RetrieveUpdateAPIView):
-    permission_classes = [AllowAny]
+class ProductUpdateApiView(IsStaffEditorPermissionMixin,RetrieveUpdateAPIView):
+   
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
@@ -40,8 +41,8 @@ class ProductUpdateApiView(RetrieveUpdateAPIView):
 
 product_update_api_view = ProductUpdateApiView.as_view()
 
-class ProductUltimate(RetrieveUpdateDestroyAPIView,ListCreateAPIView):
-    permission_classes = [IsAdminUser,IsStaffEditorPermission]
+class ProductUltimate(IsStaffEditorPermissionMixin,RetrieveUpdateDestroyAPIView,ListCreateAPIView):
+    # permission_classes = [IsAdminUser,IsStaffEditorPermission]
     # authentication_classes = [SessionAuthentication,CustomTokenAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -60,7 +61,7 @@ class ProductUltimate(RetrieveUpdateDestroyAPIView,ListCreateAPIView):
        
     
 productUltimate = ProductUltimate.as_view()
-class ProductRetriveDestroyView(RetrieveDestroyAPIView):
+class ProductRetriveDestroyView(IsStaffEditorPermissionMixin,RetrieveDestroyAPIView):
     queryset = Product.objects.all();
     serializer_class = ProductSerializer
     
@@ -77,8 +78,8 @@ class ProductRetriveDestroyView(RetrieveDestroyAPIView):
 
 productDeleteAndRetrive = ProductRetriveDestroyView.as_view()
 
-class ProductDeleteApiView(DestroyAPIView):
-    permission_classes = [AllowAny]
+class ProductDeleteApiView(IsStaffEditorPermissionMixin,DestroyAPIView):
+   
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
@@ -94,8 +95,8 @@ class ProductDeleteApiView(DestroyAPIView):
         
 product_delete_api_view = ProductDeleteApiView.as_view()
 
-class ProductCreateApiView(CreateAPIView):
-    permission_classes = [AllowAny]
+class ProductCreateApiView(IsStaffEditorPermissionMixin,CreateAPIView):
+   
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -109,7 +110,7 @@ class ProductCreateApiView(CreateAPIView):
 product_create_api_view = ProductCreateApiView.as_view()
 
 
-class ProductListCreateApiView(ListCreateAPIView):
+class ProductListCreateApiView(IsStaffEditorPermissionMixin,ListCreateAPIView):
     permission_classes = [IsAdminUser,IsStaffEditorPermission]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -125,7 +126,7 @@ product_list_create_api_view = ProductListCreateApiView.as_view()
 
 # ** Exploring Mixins   
 
-class productMixinOperations(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin , mixins.UpdateModelMixin,mixins.DestroyModelMixin,GenericAPIView):
+class productMixinOperations(IsStaffEditorPermissionMixin,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin , mixins.UpdateModelMixin,mixins.DestroyModelMixin,GenericAPIView):
 
     lookup_field = "pk"
     
