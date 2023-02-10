@@ -3,7 +3,7 @@ import json
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from products.mixins import IsStaffEditorPermissionMixin
+from products.mixins import IsStaffEditorPermissionMixin, QuerySetMixin
 from products.models import Product
 from products.serializers import ProductSerializer
 from rest_framework.decorators import api_view
@@ -17,17 +17,10 @@ pre_data = {
     "message" : "Home Api Enabled"
 }
 
-class PreDataApiView(IsStaffEditorPermissionMixin,ListCreateAPIView):
-    queryset = Product.objects.all()
+class PreDataApiView(IsStaffEditorPermissionMixin,QuerySetMixin,ListCreateAPIView):
+    # queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
-       
-   
-        
-    
-
-
-
 # @api_view(['GET'])
 # def get_all_products(request,*args,**kwargs):
 #     data = {}
