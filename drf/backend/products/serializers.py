@@ -6,12 +6,15 @@ from .models import Product
 
 class ProductSerializer(ModelSerializer):
     
+    
+    url = serializers.SerializerMethodField(read_only=True)
+    
    
     base_price = serializers.SerializerMethodField(read_only=True)
    
     class Meta:
         model = Product
-        fields = ["id", "title", "content", "price","base_price"]
+        fields = ['url',"id", "title", "content", "price","base_price"]
     
     def get_base_price(self, obj):
         try:
@@ -21,6 +24,9 @@ class ProductSerializer(ModelSerializer):
         # if not hasattr(obj, "base_price"):
         #     return None
         # return obj.base_price
+    
+    def get_url(self, obj):
+        return f"/api/products/ultimate/{obj.id}/"
 
 class NewProductSerializer(ModelSerializer):
     class Meta:

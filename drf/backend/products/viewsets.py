@@ -16,6 +16,11 @@ class ProductViewSet(IsAdminUser,IsStaffEditorPermissionMixin,viewsets.ModelView
 
 class ProductTestViewSet(viewsets.ViewSet):
    
+    def get_object(self):
+        try:
+            return Product.objects.get(pk=self.kwargs['pk'])
+        except Product.DoesNotExist:
+            return Response({"message":"Product not found"},status=404)
     
     def list(self, request, *args, **kwargs):
         queryset = Product.objects.all()
