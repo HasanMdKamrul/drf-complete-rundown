@@ -24,6 +24,7 @@ class ProductDetailApiView(IsStaffEditorPermissionMixin,RetrieveAPIView):
    
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    
 
 product_detail_api_view = ProductDetailApiView.as_view()
 
@@ -48,6 +49,8 @@ class ProductUltimate(IsStaffEditorPermissionMixin,RetrieveUpdateDestroyAPIView,
     serializer_class = ProductSerializer
     lookup_field = "pk"
     
+
+    
     # def post(self, request, *args, **kwargs):
     #     if not kwargs.get("pk"):
     #         return self.create(request,*args,**kwargs)
@@ -58,7 +61,8 @@ class ProductUltimate(IsStaffEditorPermissionMixin,RetrieveUpdateDestroyAPIView,
         queryset = Product.objects.all()
         serialisers = ProductSerializer(queryset,many=True)
         return Response(serialisers.data)
-       
+    
+
     
 productUltimate = ProductUltimate.as_view()
 class ProductRetriveDestroyView(IsStaffEditorPermissionMixin,RetrieveDestroyAPIView):

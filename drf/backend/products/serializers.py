@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from rest_framework.serializers import ModelSerializer
 
 from .models import Product
@@ -25,8 +26,20 @@ class ProductSerializer(ModelSerializer):
         #     return None
         # return obj.base_price
     
+    
+    
     def get_url(self, obj):
-        return f"/api/products/ultimate/{obj.id}/"
+       
+        request = self.context.get("request")
+        mywish = self.context.get("mywish")
+        
+        print(mywish)
+        
+        if request is None:
+            return None
+        return reverse("product-detail",kwargs={"pk":obj.pk},request=request)
+        
+        # return f"/api/products/ultimate/{obj.id}/"
 
 class NewProductSerializer(ModelSerializer):
     class Meta:
