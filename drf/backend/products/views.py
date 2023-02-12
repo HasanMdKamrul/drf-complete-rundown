@@ -14,7 +14,7 @@ from rest_framework.permissions import (AllowAny, DjangoModelPermissions,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .mixins import IsStaffEditorPermissionMixin
+from .mixins import GetQuerySetMixin, IsStaffEditorPermissionMixin
 from .models import Product
 from .permissions import IsStaffEditorPermission
 from .serializers import NewProductSerializer, ProductSerializer
@@ -114,25 +114,35 @@ class ProductCreateApiView(IsStaffEditorPermissionMixin,CreateAPIView):
 product_create_api_view = ProductCreateApiView.as_view()
 
 
-class ProductListCreateApiView(ListCreateAPIView):
+class ProductListCreateApiView(GetQuerySetMixin,IsStaffEditorPermission,ListCreateAPIView):
     # permission_classes = [IsAdminUser,IsStaffEditorPermission]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
+    def get(self, request, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            data = Product.objects.none()
+            return Response(data)
+        return super().get(request,*args,**kwargs)
+    
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
-        user = self.request.user
+        user = self.request.user 
+        
         content = serializer.validated_data.get("content") or None
         if content is None:
             content = title
+       
         serializer.save(content=content,user=user)
     
-    def get_queryset(self, *args, **kwargs):
-        default_queryset = super().get_queryset(*args, **kwargs)
-        user = self.request.user
-        if not user.is_authenticated:
-            return default_queryset.none()
-        return default_queryset.filter(user=user)
+    # def get_queryset(self, *args, **kwargs):
+    #     default_queryset = super().get_queryset(*args, **kwargs)
+    #     user = self.request.user
+    #     if not user.is_authenticated:
+    #         return default_queryset.none()
+    #     if user.is_staff or user.is_superuser:
+    #         return default_queryset
+    #     return default_queryset.filter(user=user)
         
 product_list_create_api_view = ProductListCreateApiView.as_view()
 
