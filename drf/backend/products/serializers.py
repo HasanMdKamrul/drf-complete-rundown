@@ -23,6 +23,15 @@ class ProductSerializer(ModelSerializer):
         model = Product
         fields = ['url','edit_url','relative_url',"email","id", "title", "content", "price","base_price"]
     
+    
+    # ** Custom validation of the field **
+    
+    def validate_title(self, value):
+        queryset = Product.objects.filter(title__exact=value)
+        if queryset.exists():
+            raise serializers.ValidationError(f"Title {value} already exists")
+        return value.upper()
+    
     def get_base_price(self, obj):
         try:
             return obj.base_price
