@@ -16,10 +16,12 @@ class ProductSerializer(ModelSerializer):
     
    
     base_price = serializers.SerializerMethodField(read_only=True)
+    
+    email = serializers.EmailField(write_only=True)
    
     class Meta:
         model = Product
-        fields = ['url','edit_url','relative_url',"id", "title", "content", "price","base_price"]
+        fields = ['url','edit_url','relative_url',"email","id", "title", "content", "price","base_price"]
     
     def get_base_price(self, obj):
         try:
@@ -34,7 +36,18 @@ class ProductSerializer(ModelSerializer):
     def get_relative_url(self, obj):
         return f"/api/products/ultimate/{obj.id}/"
     
+    def create(self, validated_data):
+        # type of validated_data is dict
+        print(type(validated_data))
+        # print(validated_data["title"])
+        email = validated_data.pop("email")
+        validated_data["content"] = email
+        return super().create(validated_data)
     
+    
+    def update(self, instance, validated_data):
+        email = validated_data.pop("email")
+        return super().update(instance, validated_data)
     
     def get_edit_url(self, obj):
        
