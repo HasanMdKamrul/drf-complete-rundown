@@ -3,6 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.serializers import ModelSerializer
 
 from .models import Product
+from .validator import unique_title_validator, validate_title_with_hello
 
 
 class ProductSerializer(ModelSerializer):
@@ -19,18 +20,21 @@ class ProductSerializer(ModelSerializer):
     
     email = serializers.EmailField(write_only=True)
    
+   
+   
     class Meta:
         model = Product
         fields = ['url','edit_url','relative_url',"email","id", "title", "content", "price","base_price"]
     
+    title = serializers.CharField(validators=[validate_title_with_hello,unique_title_validator])
     
     # ** Custom validation of the field **
     
-    def validate_title(self, value):
-        queryset = Product.objects.filter(title__exact=value)
-        if queryset.exists():
-            raise serializers.ValidationError(f"Title {value} already exists")
-        return value.upper()
+    # def validate_title(self, value):
+    #     queryset = Product.objects.filter(title__iexact=value)
+    #     if queryset.exists():
+    #         raise serializers.ValidationError(f"Title {value} already exists")
+    #     return value.upper()
     
     def get_base_price(self, obj):
         try:
