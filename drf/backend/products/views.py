@@ -20,7 +20,7 @@ from .permissions import IsStaffEditorPermission
 from .serializers import NewProductSerializer, ProductSerializer
 
 
-class ProductDetailApiView(IsStaffEditorPermissionMixin,RetrieveAPIView):
+class ProductDetailApiView(RetrieveAPIView):
    
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -114,17 +114,25 @@ class ProductCreateApiView(IsStaffEditorPermissionMixin,CreateAPIView):
 product_create_api_view = ProductCreateApiView.as_view()
 
 
-class ProductListCreateApiView(IsStaffEditorPermissionMixin,ListCreateAPIView):
-    permission_classes = [IsAdminUser,IsStaffEditorPermission]
+class ProductListCreateApiView(ListCreateAPIView):
+    # permission_classes = [IsAdminUser,IsStaffEditorPermission]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
+    
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
+        user = self.request.user
         content = serializer.validated_data.get("content") or None
         if content is None:
             content = title
-        serializer.save(content=content)
+        serializer.save(content=content,user=user)
+    
+    def get_queryset(self, *args, **kwargs):
+        default_queryset = super().get_queryset(*args, **kwargs)
+        user = self.request.user
+        if not user.is_authenticated:
+            return default_queryset.none()
+        return default_queryset.filter(user=user)
         
 product_list_create_api_view = ProductListCreateApiView.as_view()
 
