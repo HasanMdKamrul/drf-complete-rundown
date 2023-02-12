@@ -8,14 +8,18 @@ from .models import Product
 class ProductSerializer(ModelSerializer):
     
     
-    url = serializers.SerializerMethodField(read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name="product-detail",lookup_field="pk")
+    
+    edit_url = serializers.SerializerMethodField(read_only=True)
+    
+    relative_url = serializers.SerializerMethodField(read_only=True)
     
    
     base_price = serializers.SerializerMethodField(read_only=True)
    
     class Meta:
         model = Product
-        fields = ['url',"id", "title", "content", "price","base_price"]
+        fields = ['url','edit_url','relative_url',"id", "title", "content", "price","base_price"]
     
     def get_base_price(self, obj):
         try:
@@ -25,19 +29,20 @@ class ProductSerializer(ModelSerializer):
         # if not hasattr(obj, "base_price"):
         #     return None
         # return obj.base_price
+        
+        
+    def get_relative_url(self, obj):
+        return f"/api/products/ultimate/{obj.id}/"
     
     
     
-    def get_url(self, obj):
+    def get_edit_url(self, obj):
        
         request = self.context.get("request")
-        mywish = self.context.get("mywish")
-        
-        print(mywish)
         
         if request is None:
             return None
-        return reverse("product-detail",kwargs={"pk":obj.pk},request=request)
+        return reverse("product-update",kwargs={"pk":obj.pk},request=request)
         
         # return f"/api/products/ultimate/{obj.id}/"
 
