@@ -2,17 +2,25 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 User = get_user_model()
-from products.models import Product
+from products.models import Category, Product
 
 
+class CategorySerializer(serializers.Serializer):
+    name = serializers.CharField(read_only=True)
+    category_exists = serializers.BooleanField(read_only=True)
+    
 class MySecondProductSerializer(serializers.ModelSerializer):
+    
+    category = CategorySerializer(read_only=True)
+    
+
     class Meta:
         model = Product
         fields = [
             'title',
             'content',
             'price',
-           
+            'category',
         ]
 
 class PublicUserSerialiser(serializers.Serializer):
@@ -25,5 +33,3 @@ class PublicUserSerialiser(serializers.Serializer):
         user = obj
         qs = Product.objects.filter(user=user)
         return MySecondProductSerializer(qs, many=True).data
-   
-        
