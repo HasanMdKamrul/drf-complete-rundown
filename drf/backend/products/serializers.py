@@ -1,3 +1,4 @@
+from api.serialisers import PublicUserSerialiser
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.serializers import ModelSerializer
@@ -8,6 +9,9 @@ from .validator import unique_title_validator, validate_title_with_hello
 
 class ProductSerializer(ModelSerializer):
     
+    user = PublicUserSerialiser(read_only=True)
+    
+    my_user_data = serializers.SerializerMethodField(read_only=True)
     
     url = serializers.HyperlinkedIdentityField(view_name="product-detail",lookup_field="pk")
     
@@ -24,7 +28,18 @@ class ProductSerializer(ModelSerializer):
    
     class Meta:
         model = Product
-        fields = ['url','edit_url','relative_url',"email","id", "title", "content", "price","base_price"]
+        fields = ["user",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data"]
+        
+    def get_my_user_data(self, obj):
+        if obj.user.email == "":
+            return {
+            "username": obj.user.username,
+            "email": "No email",
+        }
+        return {
+            "username": obj.user.username,
+            "email": obj.user.email,
+        }
     
     title = serializers.CharField(validators=[validate_title_with_hello,unique_title_validator])
     

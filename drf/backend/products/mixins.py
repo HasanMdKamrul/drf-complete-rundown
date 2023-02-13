@@ -5,7 +5,7 @@ from .permissions import IsStaffEditorPermission
 
 
 class IsStaffEditorPermissionMixin():
-    permission_classes = [permissions.IsAdminUser,IsStaffEditorPermission]
+    permission_classes = [IsStaffEditorPermission]
 
 class QuerySetMixin():
     queryset = Product.objects.all()

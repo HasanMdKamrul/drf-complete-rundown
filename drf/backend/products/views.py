@@ -114,16 +114,16 @@ class ProductCreateApiView(IsStaffEditorPermissionMixin,CreateAPIView):
 product_create_api_view = ProductCreateApiView.as_view()
 
 
-class ProductListCreateApiView(GetQuerySetMixin,IsStaffEditorPermission,ListCreateAPIView):
+class ProductListCreateApiView(GetQuerySetMixin,IsAdminUser,IsStaffEditorPermissionMixin,ListCreateAPIView):
     # permission_classes = [IsAdminUser,IsStaffEditorPermission]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
-    def get(self, request, *args, **kwargs):
-        if not self.request.user.is_authenticated:
-            data = Product.objects.none()
-            return Response(data)
-        return super().get(request,*args,**kwargs)
+    # def get(self, request, *args, **kwargs):
+    #     if not self.request.user.is_authenticated:
+    #         data = Product.objects.none()
+    #         return Response(data)
+    #     return super().get(request,*args,**kwargs)
     
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
