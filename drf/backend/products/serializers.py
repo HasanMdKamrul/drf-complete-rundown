@@ -1,4 +1,5 @@
-from api.serialisers import PublicUserSerialiser
+# from api.serialisers import PublicUserSerialiser
+from api.customserialisers import PublicUserSerializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.serializers import ModelSerializer
@@ -10,7 +11,9 @@ from .validator import unique_title_validator, validate_title_with_hello
 class ProductSerializer(ModelSerializer):
     
     
-    user = PublicUserSerialiser(read_only=True)
+   
+    
+    owner = PublicUserSerializer(source="user",read_only=True)
     
     
     my_user_data = serializers.SerializerMethodField(read_only=True)
@@ -30,9 +33,11 @@ class ProductSerializer(ModelSerializer):
    
     class Meta:
         model = Product
-        fields = ["user",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category"]
+        fields = ["owner",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category"]
         
 
+    
+    
         
     def get_my_user_data(self, obj):
         if obj.user.email == "":
