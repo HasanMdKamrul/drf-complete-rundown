@@ -1,5 +1,5 @@
 # from api.serialisers import PublicUserSerialiser
-from api.customserialisers import PublicUserSerializer
+from api.customserialisers import ProductSerializer, PublicUserSerializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.serializers import ModelSerializer
@@ -8,9 +8,17 @@ from .models import Product
 from .validator import unique_title_validator, validate_title_with_hello
 
 
+class ProductSerializer(ProductSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="product-detail",lookup_field="pk")
+    title = serializers.CharField(read_only=True)
+   
+  
+
 class ProductSerializer(ModelSerializer):
     
+    related_products = ProductSerializer(source="user.product_set.all",read_only=True,many=True)
     
+    related_products_with_extra_field = serializers.SerializerMethodField(read_only=True)
    
     
     owner = PublicUserSerializer(source="user",read_only=True)
@@ -30,12 +38,31 @@ class ProductSerializer(ModelSerializer):
     email = serializers.EmailField(write_only=True)
    
    
+        
+       
    
     class Meta:
         model = Product
-        fields = ["owner",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category"]
+        fields = ["owner",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category","related_products","related_products_with_extra_field"]
         
 
+    def get_related_products_with_extra_field(self, obj):
+       
+        my_all_products = obj.user.product_set.all()
+        titles = []
+        for product in my_all_products:
+            titles.append(product.title)
+        return {
+                "success": True,
+                "titles" : titles
+            }
+        # for product in obj:
+        #     return {
+        #          "my_products": product.title,
+        #     }
+        # return {
+        #     "my_products": "my_products",
+        # }
     
     
         
