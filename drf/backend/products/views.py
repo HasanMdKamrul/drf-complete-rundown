@@ -16,6 +16,7 @@ from rest_framework.response import Response
 
 from .mixins import GetQuerySetMixin, IsStaffEditorPermissionMixin
 from .models import Product
+from .pagination import CustomPagination
 from .permissions import IsStaffEditorPermission
 from .serializers import NewProductSerializer, ProductSerializer
 
@@ -116,6 +117,7 @@ product_create_api_view = ProductCreateApiView.as_view()
 
 class ProductListCreateApiView(GetQuerySetMixin,IsAdminUser,IsStaffEditorPermissionMixin,ListCreateAPIView):
     # permission_classes = [IsAdminUser,IsStaffEditorPermission]
+    pagination_class = CustomPagination
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
