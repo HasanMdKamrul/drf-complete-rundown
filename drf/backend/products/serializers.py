@@ -16,6 +16,9 @@ class ProductSerializer(ProductSerializer):
 
 class ProductSerializer(ModelSerializer):
     
+    my_user_products = ProductSerializer(source = 'user.product_set.all',many=True)
+    
+
     related_products = ProductSerializer(source="user.product_set.all",read_only=True,many=True)
     
     related_products_with_extra_field = serializers.SerializerMethodField(read_only=True)
@@ -43,19 +46,23 @@ class ProductSerializer(ModelSerializer):
    
     class Meta:
         model = Product
-        fields = ["owner",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category","related_products","related_products_with_extra_field"]
+        fields = ["my_user_products","owner",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category","related_products","related_products_with_extra_field"]
         
 
+    
     def get_related_products_with_extra_field(self, obj):
        
         my_all_products = obj.user.product_set.all()
         titles = []
         for product in my_all_products:
             titles.append(product.title)
-        return {
-                "success": True,
-                "titles" : titles
-            }
+        return [
+            
+               { "user" : obj.user.username},
+                {"success": True},
+                {"titles" : titles}
+    
+        ]
         # for product in obj:
         #     return {
         #          "my_products": product.title,
@@ -127,3 +134,7 @@ class NewProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = ["id", "title", "content", "price","get_base_price"]
+        
+    
+    
+ 
