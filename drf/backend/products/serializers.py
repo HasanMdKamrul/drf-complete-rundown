@@ -16,18 +16,17 @@ class ProductSerializer(ProductSerializer):
 
 class ProductSerializer(ModelSerializer):
     
-    my_user_products = ProductSerializer(source = 'user.product_set.all',many=True)
-    
+    # my_user_products = ProductSerializer(source = 'user.product_set.all',many=True) 
 
-    related_products = ProductSerializer(source="user.product_set.all",read_only=True,many=True)
+    # related_products = ProductSerializer(source="user.product_set.all",read_only=True,many=True)
     
-    related_products_with_extra_field = serializers.SerializerMethodField(read_only=True)
+    # related_products_with_extra_field = serializers.SerializerMethodField(read_only=True)
    
     
     owner = PublicUserSerializer(source="user",read_only=True)
     
     
-    my_user_data = serializers.SerializerMethodField(read_only=True)
+    # my_user_data = serializers.SerializerMethodField(read_only=True)
     
     url = serializers.HyperlinkedIdentityField(view_name="product-detail",lookup_field="pk")
     
@@ -36,9 +35,9 @@ class ProductSerializer(ModelSerializer):
     relative_url = serializers.SerializerMethodField(read_only=True)
     
    
-    base_price = serializers.SerializerMethodField(read_only=True)
+    # base_price = serializers.SerializerMethodField(read_only=True)
     
-    email = serializers.EmailField(write_only=True)
+    # email = serializers.EmailField(write_only=True)
    
    
         
@@ -46,23 +45,23 @@ class ProductSerializer(ModelSerializer):
    
     class Meta:
         model = Product
-        fields = ["my_user_products","owner",'url','edit_url','relative_url',"email","id", "title", "content", "price","base_price","my_user_data","category","related_products","related_products_with_extra_field"]
+        fields = ["owner",'url','edit_url','relative_url',"id", "title", "content", "price","category"]
         
 
     
-    def get_related_products_with_extra_field(self, obj):
+    # def get_related_products_with_extra_field(self, obj):
        
-        my_all_products = obj.user.product_set.all()
-        titles = []
-        for product in my_all_products:
-            titles.append(product.title)
-        return [
+    #     my_all_products = obj.user.product_set.all()
+    #     titles = []
+    #     for product in my_all_products:
+    #         titles.append(product.title)
+    #     return [
             
-               { "user" : obj.user.username},
-                {"success": True},
-                {"titles" : titles}
+    #            { "user" : obj.user.username},
+    #             {"success": True},
+    #             {"titles" : titles}
     
-        ]
+    #     ]
         # for product in obj:
         #     return {
         #          "my_products": product.title,
@@ -73,16 +72,16 @@ class ProductSerializer(ModelSerializer):
     
     
         
-    def get_my_user_data(self, obj):
-        if obj.user.email == "":
-            return {
-            "username": obj.user.username,
-            "email": "No email",
-        }
-        return {
-            "username": obj.user.username,
-            "email": obj.user.email,
-        }
+    # def get_my_user_data(self, obj):
+    #     if obj.user.email == "":
+    #         return {
+    #         "username": obj.user.username,
+    #         "email": "No email",
+    #     }
+    #     return {
+    #         "username": obj.user.username,
+    #         "email": obj.user.email,
+    #     }
     
     title = serializers.CharField(validators=[validate_title_with_hello,unique_title_validator])
     
@@ -94,11 +93,11 @@ class ProductSerializer(ModelSerializer):
     #         raise serializers.ValidationError(f"Title {value} already exists")
     #     return value.upper()
     
-    def get_base_price(self, obj):
-        try:
-            return obj.base_price
-        except :
-            return None
+    # def get_base_price(self, obj):
+    #     try:
+    #         return obj.base_price
+    #     except :
+    #         return None
         # if not hasattr(obj, "base_price"):
         #     return None
         # return obj.base_price

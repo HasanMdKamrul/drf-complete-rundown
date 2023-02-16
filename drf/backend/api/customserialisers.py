@@ -15,9 +15,9 @@ class ProductSerializer(serializers.Serializer):
 class PublicUserSerializer(serializers.Serializer):
     username = serializers.CharField(read_only=True)
     id = serializers.IntegerField(read_only=True)
-    other_products = serializers.SerializerMethodField(read_only=True)
+    # other_products = serializers.SerializerMethodField(read_only=True)
     
-    def get_other_products(self, obj):
-        user = obj
-        products_data = user.product_set.all()[0:5]
-        return ProductSerializer(products_data, many=True, context = self.context).data
+    # def get_other_products(self, obj):
+    #     user = obj
+    #     products_data = user.product_set.all()[0:2]
+    #     return ProductSerializer(products_data, many=True, context = self.context).data
